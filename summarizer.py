@@ -10,9 +10,34 @@ load_dotenv()
 kw_model = KeyBERT()
 summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
+def text_splitter(text):
+    sentences = text.split(". ")
+    split_text = []
+    current_chunk = ""
+
+    for s in sentences:
+        if len(current_chunk) + len(s) > 1999:
+            split_text.append(current_chunk)
+            current_chunk = s
+        else:
+            current_chunk += ". " + s
+    
+    split_text.append(current_chunk)
+    return split_text
+
 def huggingface_summary(text, kw_num):
-    result = summarizer(text)
-    summary = result[0]["summary_text"]
+    if len(text) > 1400:
+        split_text = text_splitter(text)
+        to_summarize = []
+        for i in split_text:
+            to_summarize.append(summarizer(i)[0]["summary_text"])
+        combined = " ".join(to_summarize)
+        result = summarizer(combined)
+        summary = result[0]["summary_text"]
+    else:
+        result = summarizer(text)
+        summary = result[0]["summary_text"]
+
     keywords = kw_model.extract_keywords(text, top_n=kw_num)
     top10_kw = [kw[0] for kw in keywords]
     return {"summary": summary, "vocabulary": top10_kw}
