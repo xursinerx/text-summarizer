@@ -1,0 +1,6 @@
+transformers
+torch
+streamlit
+keybert
+openai
+python-dotenv
