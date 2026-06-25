@@ -23,7 +23,9 @@ if paid_ver:
 else:
     st.write("Currently using free version.")
 
-if st.button("summarize", type="primary", disabled=(not text_input)):
+has_input = (uploaded_file is not None) or text_input
+
+if st.button("summarize", type="primary", disabled=(not has_input)):
     with st.spinner("Summarizing..."):
         result = summarize(text_input, kw_amount, paid_ver)
     
