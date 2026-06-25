@@ -4,3 +4,4 @@ streamlit
 keybert
 openai
 python-dotenv
+PyPDF2
